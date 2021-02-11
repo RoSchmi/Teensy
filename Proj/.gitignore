@@ -1,0 +1,24 @@
+# .gitignore
+# Erstmal alles ignorieren
+*
+!.gitignore
+
+## Only include this folders
+!/Teensy41_Ethernet_NtpClient_Basic/
+!/Teensy41_Ethernet_NtpClient_Basic/**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
