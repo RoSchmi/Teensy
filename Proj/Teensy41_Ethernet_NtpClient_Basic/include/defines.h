@@ -1,3 +1,5 @@
+// defines adapted to Teensy 4.1 by RoSchmi
+
 /****************************************************************************************************************************
   defines.h
 
@@ -32,6 +34,7 @@
 // Debug Level from 0 to 4
 #define _ETHERNET_WEBSERVER_LOGLEVEL_       3
 
+
 #if    ( defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_SAMD_MKR1000) || defined(ARDUINO_SAMD_MKRWIFI1010) \
       || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) \
       || defined(ARDUINO_SAMD_MKRGSM1400) || defined(ARDUINO_SAMD_MKRNB1500) || defined(ARDUINO_SAMD_MKRVIDOR4000) || defined(__SAMD21G18A__) \
@@ -43,6 +46,7 @@
 #define ETHERNET_USE_SAMD      true
 #endif
 
+
 #if ( defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
         defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || defined(NRF52840_CLUE) || \
         defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
@@ -52,12 +56,16 @@
 #define ETHERNET_USE_NRF528XX      true
 #endif
 
+
+
 #if ( defined(ARDUINO_SAM_DUE) || defined(__SAM3X8E__) )
 #if defined(ETHERNET_USE_SAM_DUE)
 #undef ETHERNET_USE_SAM_DUE
 #endif
 #define ETHERNET_USE_SAM_DUE      true
 #endif
+
+
 
 #if defined(ETHERNET_USE_SAMD)
 // For SAMD
@@ -168,6 +176,7 @@
 #define BOARD_TYPE      "SAMD Unknown"
 #endif
 
+
 #elif (ETHERNET_USE_SAM_DUE)
 // Default pin 10 to SS/CS
 #define USE_THIS_SS_PIN       10
@@ -176,6 +185,7 @@
 #elif (ETHERNET_USE_NRF528XX)
 // Default pin 10 to SS/CS
 #define USE_THIS_SS_PIN       10
+
 
 #if defined(NRF52840_FEATHER)
 #define BOARD_TYPE      "NRF52840_FEATHER"
@@ -206,9 +216,11 @@
 #define BOARD_TYPE      "nRF52 Unknown"
 #endif
 
+
 #elif ( defined(CORE_TEENSY) )
 // Default pin 10 to SS/CS
 #define USE_THIS_SS_PIN       10
+
 
 #if defined(__IMXRT1062__)
     // For Teensy 4.1/4.0
@@ -329,6 +341,7 @@
 #warning Using UIPEthernet library
 #define SHIELD_TYPE           "ENC28J60 using UIPEthernet Library"
 #endif      // #if !USE_UIP_ETHERNET
+
 
 //#include <EthernetWebServer.h>
 
