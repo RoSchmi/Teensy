@@ -11,5 +11,10 @@ https://github.com/khoih-prog/NTPClient_Generic
 ### Teensy41_RTC_Test
 Basic Real Time Clock (RTC) example adapted to Teensy 4.1
 
+### Teensy41_SysTime_RTC_Example
+Get actual time via NTP and store time in RTC of Teensy 4.1
+
+
+
 
 
