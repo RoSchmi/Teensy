@@ -32,6 +32,8 @@
 
 #include <NTPClient_Generic.h>
 
+//#include "TimeLib.h"
+
 // A UDP instance to let us send and receive packets over UDP
 EthernetUDP ntpUDP;
 
@@ -90,19 +92,19 @@ void loop()
 {
   timeClient.update();
 
-
   if (timeClient.updated())
     Serial.println("********UPDATED********");
   else
     Serial.println("******NOT UPDATED******");
-
+  
+  String theTime = timeClient.getFormattedTime();
   Serial.println("UTC : " + timeClient.getFormattedUTCTime());
   Serial.println("UTC : " + timeClient.getFormattedUTCDateTime());
   Serial.println("LOC : " + timeClient.getFormattedTime());
   Serial.println("LOC : " + timeClient.getFormattedDateTime());
   Serial.println("UTC EPOCH : " + String(timeClient.getUTCEpochTime()));
   Serial.println("LOC EPOCH : " + String(timeClient.getEpochTime()));
-
+  
   // Function test
   // Without leading 0
   Serial.println(String("UTC : ") + timeClient.getUTCHours() + ":" + timeClient.getUTCMinutes() + ":" + timeClient.getUTCSeconds() + " " +
@@ -119,7 +121,7 @@ void loop()
   // With leading 0
   Serial.println(String("LOC : ") + timeClient.getStrHours() + ":" + timeClient.getStrMinutes() + ":" + timeClient.getStrSeconds() + " " +
         timeClient.getDoW() + " " + timeClient.getDay() + "/" + timeClient.getMonth() + "/" + timeClient.getYear() + " or " +
-        timeClient.getDay() + " " + timeClient.getMonthStr() + " " + timeClient.getYear());       
-
+        timeClient.getDay() + " " + timeClient.getMonthStr() + " " + timeClient.getYear());
+         
   delay(10000);
 }

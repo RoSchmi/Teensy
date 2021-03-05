@@ -63,8 +63,6 @@ void setup() {
 //  rtc_set_time((uint32_t)&__rtc_localtime);   //LPSRTC will start at 0 otherwise  1547051415;
   time_t tt = rtc_secs();
   Serial.printf("time set to %s\n", ctime(&tt));
-  //Serial.printf("time set to %s\n", asctime(localtime(&tt));
- 
 }
 
 void loop() {
