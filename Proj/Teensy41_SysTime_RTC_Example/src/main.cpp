@@ -1,10 +1,11 @@
 // Example for Teensy 4.1, setting the RTC from a NTP request
 
 // Cave !!!!!
-// There are problems concerning  the Time.h library and C time.h library (which is additionally needed) on Teensy 4.1 
+// There are problems concerning  the Time.h library and C time.h library (which is sometimes additionally needed) on Teensy 4.1 
 // To reach that the C time.h is included go to:
 // C:\Users\User\.platformio\packages\framework-arduinoteensy\libraries\Time
 // and rename Time.h to Time.h_
+// https://forum.pjrc.com/threads/62357-TimLib-h-vs-Time-h
 
 #include <Arduino.h>
 #include "DateTime.h"
