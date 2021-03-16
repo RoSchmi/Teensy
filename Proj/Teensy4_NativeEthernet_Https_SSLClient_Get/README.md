@@ -1,6 +1,6 @@
 # Teensy4_NativeEthernet_Https_SSLClient_Get
 
-Teensy 4.1 downloads a site SSL secures using 'NativeEthernet'- and 'EthernetHttpClient_SSL' library
+Teensy 4.1 downloads a site SSL-secured using 'NativeEthernet'- and 'EthernetHttpClient_SSL' library
 
 // https://github.com/vjmuzik/NativeEthernet
 // https://github.com/vjmuzik/FNET
