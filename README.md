@@ -14,6 +14,9 @@ Basic Real Time Clock (RTC) example adapted to Teensy 4.1
 ### Teensy41_SysTime_RTC_Example
 Get actual time via NTP and store time in RTC of Teensy 4.1
 
+### Teensy4_NativeEthernet_Https_SSLClient_Get
+Teensy 4.1 downloads a site SSL secured using 'NativeEthernet'- and 'EthernetHttpClient_SSL' library
+
 
 
 
