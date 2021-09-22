@@ -1,26 +1,16 @@
-//#include <MD5Builder.h>
 #include <Arduino.h>
 #include "RsArduinoFritzApi.h"
 #include "EthernetHttpClient_SSL.h"
-//#include "EthernetWebServer_SSL.h"
-//#include "defines.h"
 
-//#include "NativeEthernetClient.h"
-// TODO: Add Compiler Directive for logging stuff ... #define FRITZ_API_DEBUG
-
-//
-//FritzApi::FritzApi(const char* user, const char* password, Protocol protocol, EthernetHttpClient * pHttp) {
-FritzApi::FritzApi(const char* user, const char* password, Protocol protocol, EthernetClient * pClient, EthernetSSLClient * pSslClient, EthernetHttpClient * pHttp) {
+FritzApi::FritzApi(const char* user, const char* password, const char * ip, Protocol protocol, EthernetClient * pClient, EthernetSSLClient * pSslClient, EthernetHttpClient * pHttp) {
   _user = user;
   _pwd = password;
-  //_ip = ip;
-  _protocol = protocol;
+  _ip = ip;
+  _protocol = protocol; 
+  _port = protocol == Protocol::useHttp ? 80 : 443;
   http = pHttp;
   client = pClient;
   sslClient = pSslClient;
-
-
-  //sslClient(client, TAs, (size_t)TAs_NUM, 1, EthernetSSLClient::SSL_DUMP);
 }
 
 FritzApi::~FritzApi(){
@@ -28,233 +18,133 @@ FritzApi::~FritzApi(){
   _pwd="";
   _ip="";
   _protocol = Protocol::useHttps;
+  _port = 443;
   http = nullptr;
   client = nullptr;
   sslClient = nullptr;
-
-
 }
 
-
-void FritzApi::init() {
-
-     String response = getChallengeResponse();
-     //String response = "Hallo";
-     _sid = getSID(response);
-     Serial.println("SID: " + _sid);
-     /*
-     while (true)
-       {
-         delay(100);
-       }
-      */
-      /*
-      if (_sid == "") 
-      {
-          Serial.println("FRITZ_ERR_EMPTY_SID");
-	        //throw FRITZ_ERR_EMPTY_SID;
-      } 
-      else if (_sid == "0000000000000000") 
-      {
-        Serial.println("FRITZ_ERR_INVALID_SID");
-  	    //throw FRITZ_ERR_INVALID_SID;   	
-      }
-      */
-}
-
-
-
-String FritzApi::getChallengeResponse() {
-   // Get Challenge
-   // RoSchmi
-
-   //EthernetHttpClient http()   sslClient, (char *)FRITZ_IP_ADDRESS, (TRANSPORT_PROTOCOL == 0) ? 80 : 443))
-
-   if (http->connect((char *)"fritz.box", 80))
-   {
-     Serial.println(F("Connected to FritzBox"));
-     
-     //http->beginRequest();
-     //Serial.println("Returned from begin request");
-     
-     //int retCode = http->get("http://" + String("192.168.1.1") + "/login_sid.lua");
-     int retCode = http->get("/login_sid.lua");
-     Serial.println(F("Returned from get"));
-     Serial.println(retCode);
-     if (retCode != 0)
-     {
-       Serial.println(F("Error on http communication"));
-     }
-     else
-     {
-       Serial.println(F("http communication successful"));
-     }
-     int statusCode = http->responseStatusCode();
-     Serial.println("StatusCode:");
-     Serial.println(statusCode);
-     String result = "";
-     if (statusCode != 200)
-     {
-       Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
-       result = http->responseBody();
-       while (true)
-       {
-         Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
-         delay(1000);
-       }
-     }
-     else
-     {
-       Serial.println(F("FRITZ_GOT_CHALLENGE"));
-       result = http->responseBody();
-       String result2 = result.substring(0, result.length() - 1);
-       Serial.println(result2);
-       String challenge = result.substring(result.indexOf("<Challenge>") + 11, result.indexOf("</Challenge>"));
-       String challengeReponse = challenge + "-" + String(_pwd);
-       String responseHash = "";
-      
-       char meinMD5String[challengeReponse.length() + 1] = {} ;
-        challengeReponse.toCharArray(meinMD5String, challengeReponse.length() + 1);
-        //Nach 16Bit Konvertieren
-        int i = 0;
-        size_t x = 0;
-        while ( x < strlen(meinMD5String))
-        {
-          mynewbytes[i] = meinMD5String[x];
-          i++;
-          mynewbytes[i] = 0x00;
-          i++;
-          x++;
-        }
-        //http->flush();
-        http->stop();
-  //MD5 Verarbeitung mit chid+passwort MD5
-  //https://github.com/tzikis/ArduinoMD5/blob/master/examples/MD5_Hash/MD5_Hash.ino
-  //https://github.com/tzikis/ArduinoMD5/
-        
-        unsigned char* hash = MD5::make_hash((char*)mynewbytes, (size_t)(strlen((char *)meinMD5String) * 2));
-        char *md5str = MD5::make_digest(hash, 16);
-        free(hash);        
-        Serial.println(F("This is the MD5 String:"));
-        Serial.println(md5str);
-        
-        
-        delay(200);
-        //return challengeReponse;
-        return challenge + "-" + md5str;
-     
-   }
-
-}
-else
+bool FritzApi::init() 
 {
-  Serial.println("Not connected");
-  return "";
-}
-}
-
-   //http.begin("http://" + String(_ip) + "/login_sid.lua");
-   /*
-   int retCode = http.GET();
-   if (retCode < 0) {
-	 throw FRITZ_ERR_HTTP_COMMUNICATION;
-   } else if (retCode != 200) {
-	 throw FRITZ_ERR_NO_CHALLENGE;
-   }
-   String result = http.getString();
-   String challenge = result.substring(result.indexOf("<Challenge>") + 11, result.indexOf("</Challenge>"));
-   String challengeReponse = challenge + "-" + String(_pwd);
-   String responseHash = "";
-   */
-   
-   /*
-   for (unsigned int i = 0; i  < challengeReponse.length(); i++) {
-     // TODO: Sorry, no real UTF-16LE for now... just add 00
-     responseHash = responseHash + String(challengeReponse.charAt(i), HEX) + "00";
-   }
-
-   MD5Builder md5;
-   md5.begin();
-   md5.addHexString(responseHash);
-   md5.calculate();
-   
-   return challenge + "-" + md5.toString();
-   
-}
-*/
-
-
-String FritzApi::getSID(String response) {
-  //http.begin("http://" + String(_ip) + "/login_sid.lua?user=" + String(_user) + "&response=" + response);
-  Serial.println(F("Going to get SID, connState:"));
-
-  uint8_t connState = http->connected();
-  Serial.println(connState);
-  
-  /*
-  if (connState == 0)
+  String response = getChallengeResponse();
+  if (response == "")
   {
-    Serial.println(F("Have to connect"));
-    if (!(http->  connect((char *)"fritz.box", 80)))
-    {
-      Serial.println("Error on connection to fritzbox");
-      return "";
-    }
+    return false;
   }
-  */
+  _sid = getSID(response);
+  Serial.println("SID: " + _sid);
+  if (_sid == "") 
+  {
+    Serial.println("FRITZ_ERR_EMPTY_SID");
+    return false;
+	  //throw FRITZ_ERR_EMPTY_SID;
+  } 
+  else if (_sid == "0000000000000000") 
+  {
+    Serial.println("FRITZ_ERR_INVALID_SID");
+    return false;
+  	//throw FRITZ_ERR_INVALID_SID;   	
+  }
+  return true;  
+}
 
-  Serial.println("Going to get SID, connected");
+String FritzApi::getChallengeResponse() 
+{
+  http->connectionKeepAlive();
   
-  Serial.println(_user);
-  int retCode = -1;
-
-  char aUrlPa[140] {0};
-  //sprintf((char *)aUrlPa, "%s%s", "http://fritz.box/login_sid.lua?username=&response=", (char *)response.c_str());
-  sprintf((char *)aUrlPa, "%s%s%s%s", "/login_sid.lua?user=", _user, "&response=", (char *)response.c_str());
-
-
-  String augUrlPath = aUrlPa;
-  //String augUrlPath = "http://192.168.1.1/login_sid.lua?username=&response=" + response;
-
-  //String augUrlPath = "/login_sid.lua";
-  Serial.println(augUrlPath);
-    //retCode = http->get("/login_sid.lua?user=" + String(_user) + "&response=" + response);
-    
-    //http->beginRequest();
-    http->connect((char *)"fritz.box", 80);
-    retCode = http->get(augUrlPath);
-  
-    Serial.println(F("Returned from get"));
-     Serial.println(retCode);
-     if (retCode != 0)
-     {
+  if (!(http->connect((char *)_ip, _port)))
+  {
+    Serial.println(F("Not connected"));
+    return "";
+  }  
+    int retCode = http->get("/login_sid.lua");
+    if (retCode != 0)
+    {
        Serial.println(F("Error on http communication"));
        return "";
-     }
-     Serial.println(F("Getting StatusCode:"));
-     uint32_t start = millis();
-     while ((uint32_t)(millis - start) < 500)
-     {
-        delay(1);
-     }
-
-     int statusCode = http->responseStatusCode();
+    }
     
-     Serial.println(F("StatusCode:"));
-     Serial.println(statusCode);
-     while (true)
-     {
-       delay (500);
-     }
-  
-     //int retCode = http.GET();
-     if (statusCode != 200) {
-      Serial.println(F("FRITZ_ERR_NO_SID"));
+    int statusCode = http->responseStatusCode();
+    
+    String result = "";
+    if (statusCode != 200)
+    {
+      Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
+      result = http->responseBody();
+      Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
+      Serial.println(result);
       return "";
-      }
-      String result = http->responseBody();
-      // TODO: check indexOf > 0
-      String sid = result.substring(result.indexOf("<SID>") + 5,  result.indexOf("</SID>"));
+    }
+    else
+    {
+      result = http->responseBody();    
+      String challenge = result.substring(result.indexOf("<Challenge>") + 11, result.indexOf("</Challenge>"));
+      String challengeReponse = challenge + "-" + String(_pwd);
+
+      String responseHash = "";     
+      char meinMD5String[challengeReponse.length() + 1] = {} ;
+      challengeReponse.toCharArray(meinMD5String, challengeReponse.length() + 1);
+      //Nach 16Bit Konvertieren
+      int i = 0;
+      size_t x = 0;
+      while ( x < strlen(meinMD5String))
+      {
+        mynewbytes[i] = meinMD5String[x];
+        i++;
+        mynewbytes[i] = 0x00;
+        i++;
+        x++;
+      }       
+      http->stop();
+
+      //MD5 Verarbeitung mit chid+passwort MD5
+      //https://github.com/tzikis/ArduinoMD5/blob/master/examples/MD5_Hash/MD5_Hash.ino
+      //https://github.com/tzikis/ArduinoMD5/
+        
+      unsigned char* hash = MD5::make_hash((char*)mynewbytes, (size_t)(strlen((char *)meinMD5String) * 2));
+      char *md5str = MD5::make_digest(hash, 16);
+      free(hash);        
+      //Serial.println(F("This is the MD5 String:"));
+      //Serial.println(md5str);       
+      //return challengeReponse;
+      return challenge + "-" + md5str; 
+   } 
+}
+  
+String FritzApi::getSID(String response) 
+{
+   uint8_t connState = http->connected();
+   Serial.print("ConnState: ");
+   Serial.println(connState);
+  
+  /*
+  if (http->connected() == 0)
+  {  
+      Serial.println("Error on connection to fritzbox");
+      return "";
+  }
+  */
+  char augUrlPath[140] {0};
+  sprintf((char *)augUrlPath, "%s%s%s%s", "/login_sid.lua?user=", _user, "&response=", (char *)response.c_str());
+    
+  http->connect((char *)_ip, _port);
+
+  int retCode = http->get(augUrlPath); 
+  if (retCode != 0)
+  {
+    Serial.println(F("Error on http communication"));
+    return "";
+  }
+  int statusCode = http->responseStatusCode();
+  
+  if (statusCode != 200) 
+  {
+    Serial.println(F("FRITZ_ERR_NO_SID"));
+    return "";
+  }
+  String result = http->responseBody();
+  // TODO: check indexOf > 0
+  String sid = result.substring(result.indexOf("<SID>") + 5,  result.indexOf("</SID>"));
   return sid;
 }
 

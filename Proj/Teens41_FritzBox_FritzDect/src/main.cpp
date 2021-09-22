@@ -28,7 +28,7 @@ static EthernetSSLClient sslClient(client, TAs, (size_t)TAs_NUM);
   #endif
 
   //FritzApi fritz((char *)FRITZ_USER, (char *)FRITZ_PASSWORD, protocol, &httpClient );
-  FritzApi fritz((char *)FRITZ_USER, (char *)FRITZ_PASSWORD, protocol, &client, &sslClient, &httpClient);
+  FritzApi fritz((char *)FRITZ_USER, (char *)FRITZ_PASSWORD, FRITZ_IP_ADDRESS, protocol, &client, &sslClient, &httpClient);
 
 
 void setup() {
@@ -103,8 +103,8 @@ void setup() {
 
 void loop() {
 
-   fritz.init();
-   delay(3000);
+  // fritz.init();
+  // delay(3000);
 
   // put your main code here, to run repeatedly:
 }

@@ -1,11 +1,9 @@
 #ifndef _CONFIG_SECRET_H
 #define _CONFIG_SECRET_H
 
-// Rename config_secret_template.h into config_secret.h to activate the content
-
-
-// Azure Storage Credentials
-#define AZURE_CONFIG_ACCOUNT_NAME       "YourAzureStorageAccountName"
-#define AZURE_CONFIG_ACCOUNT_KEY        "3M+ssz2Ws6....YourStorageAccountKey.....BOjg+1r7ZA=="
+#define FRITZ_IP_ADDRESS "192.168.1.1"          // IP Address of FritzBox
+                                                // Change for your needs
+#define FRITZ_USER ""                           // FritzBox User
+#define FRITZ_PASSWORD "MySecretName"           // FritzBox Password
 
 #endif // _CONFIG_SECRET_H

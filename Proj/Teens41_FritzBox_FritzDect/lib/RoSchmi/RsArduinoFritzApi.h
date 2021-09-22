@@ -5,14 +5,8 @@
 #include <MD5.h>
 #include "EthernetHttpClient_SSL.h"
 #include "NativeEthernet.h"
-#include "Ethernet_HTTPClient/Ethernet_HttpClient.h"
-#include "SSLClient/SSLClient.h"
-//#include "defines.h"
-//#include "EthernetWebServer_SSL.h"
-//#include "functional-vlpp.h"
-//#include "QNEthernet.h"
-//#include "QNEthernetClient.h"
-//#include <HTTPClient.h>
+//#include "Ethernet_HTTPClient/Ethernet_HttpClient.h"
+//#include "SSLClient/SSLClient.h"
 
 #define FRITZ_ERR_HTTP_COMMUNICATION  -1001
 #define FRITZ_ERR_NO_CHALLENGE        -1002
@@ -29,19 +23,14 @@ typedef enum {
       useHttps
   } Protocol;
 
- 
-
 class FritzApi {
   public:
-    // Constructor: FB user, FB password, FB address (ip or 'fritz.box')
-    //FritzApi(const char* user, const char* password, Protocol protocol, EthernetHttpClient * pHttp);
-    FritzApi(const char* user, const char* password, Protocol protocol, EthernetClient * client, EthernetSSLClient * sslClient, EthernetHttpClient * httpClient);
-    //FritzApi(const char* user, const char* password, Protocol protocol);
+    // Constructor: FB user, FB password, FB address (ip or 'fritz.box'), http or https, all Clients potentially used 
+    FritzApi(const char* user, const char* password, const char* ip, Protocol protocol, EthernetClient * client, EthernetSSLClient * sslClient, EthernetHttpClient * httpClient);
+    
     ~FritzApi();
 
-    void init();
-
-    
+    bool init();
 	
 	// Switch actor on, return new switch state (true=on, false=off)
     boolean setSwitchOn(String ain);
@@ -71,31 +60,19 @@ class FritzApi {
 	// Set nominal temperature of thermostat (8 = <= 8°C, 28 = >= 28°C, 100 = max, 0 = off)
 	double setThermostatNominalTemperature(String ain, double temp);
 
-
-
   private:
     Protocol _protocol;
+    uint16_t _port;
     const char* _user;
     const char* _pwd;
     const char* _ip;
     String _sid;
-
+    
     byte mynewbytes[100];
-
-
-
     EthernetHttpClient * http;
 	EthernetClient * client;
     EthernetSSLClient * sslClient;
-  //static EthernetSSLClient sslClient(client, TAs, (size_t)TAs_NUM, 1, EthernetSSLClient::SSL_DUMP);   // Define Log Level
-  //static EthernetSSLClient sslClient(client, TAs, (size_t)TAs_NUM);
-
-
-    //HTTPClient http;
-
-    
-
-
+  
     String getChallengeResponse();
     String getSID(String response);
     String executeRequest(String request);
