@@ -90,6 +90,7 @@ void setup() {
   Serial.print(F("You're connected to the network, IP = "));
   Serial.println(Ethernet.localIP());
   
+  
   if (fritz.init())
   {
     Serial.println("Initialization for FritzBox is done");
@@ -97,19 +98,21 @@ void setup() {
   else
   {
     Serial.println("Initialization for FritzBox failed");
+    while (true)
+    {
+      delay(200);
+    }    
   }
   
-  delay(3000);
+  delay(1000);
 
-  bool isValid_SID = fritz.testSID();
-
-  //bool state_01 = fritz.getSwitchState(FRITZ_DEVICE_AIN_01);
-
+  String actualSID = fritz.testSID();
+  Serial.print("Actual SID is: ");
+  Serial.println(actualSID);
 }
 
 void loop() {
 
-  
   
   bool state_01 = fritz.getSwitchState(FRITZ_DEVICE_AIN_01);
 
@@ -121,6 +124,9 @@ void loop() {
   {
     Serial.println("Switch is off");
   }
+  double actPower =  fritz.getSwitchPower(FRITZ_DEVICE_AIN_01);
+  Serial.print("Power is: ");
+  Serial.println(actPower);
   
   delay(3000);
 

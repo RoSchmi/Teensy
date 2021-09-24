@@ -212,15 +212,9 @@ boolean FritzApi::getSwitchPresent(String ain) {
 }
 */
 
-/*
-double FritzApi::getSwitchPower(String ain) {
-  String result = executeRequest("getswitchpower&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return atof(result.c_str()) / 1000;
-}
-*/
+
+
+
 
 /*
 int FritzApi::getSwitchEnergy(String ain) {
@@ -297,14 +291,14 @@ double FritzApi::setThermostatNominalTemperature(String ain, double temp) {
 }
 */
 
-boolean FritzApi::testSID()
+String FritzApi::testSID()
 {
-  char cmdSuffix[100] {0};
-  //sprintf((char *)cmdSuffix, "%s%s%s%s", "switchcmd=getswitchstate&sid=", (char *)_sid.c_str(), "&ain=", (char *)ain.c_str()); 
-  sprintf((char *)cmdSuffix, "%s%s", "sid=", (char *)_sid.c_str());
   String service = "/login_sid.lua?"; 
-  
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s", "sid=", (char *)_sid.c_str());
   String result = executeRequest(service, cmdSuffix);
+  String sid = result.substring(result.indexOf("<SID>") + 5,  result.indexOf("</SID>"));
+  return sid;
 } 
 
 boolean FritzApi::getSwitchState(String ain) 
@@ -319,6 +313,17 @@ boolean FritzApi::getSwitchState(String ain)
   return (atoi(result.c_str()) == 1);
 }
 
+double FritzApi::getSwitchPower(String ain) {
+  String service = "/webservices/homeautoswitch.lua?";
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchpower&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(service , cmdSuffix);
+  if (result == "inval") {
+  	//throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return atof(result.c_str()) / 1000;
+}
+
 String FritzApi::executeRequest(String service, String command) 
 {
   String result;
@@ -326,7 +331,7 @@ String FritzApi::executeRequest(String service, String command)
   int httpStatus = -1;
   
   sprintf((char *)aUrlPath, "%s%s", (char *)service.c_str(), (char *)command.c_str());        
-  Serial.println(aUrlPath);
+  //Serial.println(aUrlPath);
 
   http->connectionKeepAlive();
   http->noDefaultRequestHeaders();
@@ -355,18 +360,14 @@ String FritzApi::executeRequest(String service, String command)
     http->endRequest();
     
     httpStatus = http->responseStatusCode();
-    Serial.println("Status Code is: ");
-    Serial.println(httpStatus);
+    //Serial.println("Status Code is: ");
+    //Serial.println(httpStatus);
     result = http->responseBody();
 
     http->stop();
 
     if (httpStatus == 200) 
-    {
-      Serial.println(result);
-
-      //RoSchmi test
-      //init();
+    {     
       return result;
     } 
     else 
@@ -380,24 +381,8 @@ String FritzApi::executeRequest(String service, String command)
   else
   {
     Serial.println("not connected");
-    while (true)
-      {
-        delay(100);
-      }
-
-  }
-  /*
-  if (httpStatus < 0) 
-  {
-     Serial.println("FRITZ_ERR_HTTP_COMMUNICATION");
-    //throw FRITZ_ERR_HTTP_COMMUNICATION;
+    return "Not connected";
   } 
-  else 
-  {
-    Serial.println(httpStatus);
-    //throw httpStatus;
-  }
-  */
 }
 
 /*

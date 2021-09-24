@@ -32,7 +32,7 @@ class FritzApi {
 
     bool init();
 
-    boolean testSID();
+    String testSID();
 	
 	// Switch actor on, return new switch state (true=on, false=off)
     boolean setSwitchOn(String ain);
