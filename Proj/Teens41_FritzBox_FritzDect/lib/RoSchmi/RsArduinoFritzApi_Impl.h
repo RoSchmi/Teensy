@@ -26,9 +26,9 @@ FritzApi::~FritzApi(){
 
 bool FritzApi::init() 
 {
-  String response = getChallengeResponse();
-  Serial.println("challenge + MD5 encoded value: ");
-  Serial.println(response);
+  // Gets challenge and MD5 encoded Password hash
+  // response is <Challenge>-<MD5-Hash>
+  String response = getChallengeResponse(); 
   if (response == "")
   {
     return false;
@@ -72,8 +72,7 @@ String FritzApi::getChallengeResponse()
     if (statusCode != 200)
     {
       Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
-      result = http->responseBody();
-      Serial.println(F("FRITZ_ERR_NO_CHALLENGE"));
+      result = http->responseBody();     
       Serial.println(result);
       return "";
     }
@@ -84,9 +83,7 @@ String FritzApi::getChallengeResponse()
       Serial.println(result.substring(0, 300 < (result.length() -1) ? 300 :  result.length() -1));
       Serial.println();
       String szblockTime = result.substring(result.indexOf("<BlockTime>") + 11, result.indexOf("</BlockTime>"));
-      int blockTime = atoi(szblockTime.c_str());
-      Serial.print("BlockTime is: ");
-      Serial.println(blockTime);
+      int blockTime = atoi(szblockTime.c_str());     
       if (blockTime > 0)
       {
         delay(blockTime * 1000);
@@ -328,26 +325,13 @@ String FritzApi::executeRequest(String service, String command)
   char aUrlPath[140] {0};
   int httpStatus = -1;
   
-     //sprintf((char *)aUrlPath, "%s%s%s%s", "http://", _ip, (char *)service.c_str(), (char *)command.c_str());
-       sprintf((char *)aUrlPath, "%s%s", (char *)service.c_str(), (char *)command.c_str());
+  sprintf((char *)aUrlPath, "%s%s", (char *)service.c_str(), (char *)command.c_str());        
+  Serial.println(aUrlPath);
 
-     //sprintf((char *)aUrlPath, "%s%s", "/webservices/homeautoswitch.lua?", (char *)command.c_str());
-     
-     Serial.println(aUrlPath);
-     //http->connect((char *)_ip, _port);
-    /*
-    while (true)
-      {
-        delay(100);
-      }
-    */
-
-
-    http->connectionKeepAlive();
-    http->noDefaultRequestHeaders();
+  http->connectionKeepAlive();
+  http->noDefaultRequestHeaders();
     
     // Try 3 times to connect
-  
   if (!(http->connected()))
   {
      for (int i = 0; i < 3; i++)
@@ -363,21 +347,13 @@ String FritzApi::executeRequest(String service, String command)
      }
   }
   
-
   if (http->connected())
   {
     http->beginRequest();
     http->get(aUrlPath);
     http->sendHeader("Host", _ip);
     http->endRequest();
-    //http->beginBody();
-    //http->print("\r\n");
     
-
-    /*
-    http->connect((char *)_ip, _port);
-    http->get(aUrlPath);
-    */
     httpStatus = http->responseStatusCode();
     Serial.println("Status Code is: ");
     Serial.println(httpStatus);
@@ -388,18 +364,17 @@ String FritzApi::executeRequest(String service, String command)
     if (httpStatus == 200) 
     {
       Serial.println(result);
+
+      //RoSchmi test
+      //init();
       return result;
-      //return http.getString();
     } 
     else 
     {
       Serial.println("Trying to get new session");
-      return true;
-      
-      
-      
       // Try to get new Session
-      //init();
+      init();
+      return result;     
     }
   }
   else
