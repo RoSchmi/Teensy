@@ -37,14 +37,12 @@ void setup() {
   
   Serial.println(F("Starting"));
   delay(2000);
-  Serial.println(F("Starting"));
-  delay(2000);
-  Serial.println(F("Starting"));
-  
   
   // start the ethernet connection and the server:
   // Use DHCP dynamic IP and random mac
-  uint16_t index = millis() % NUMBER_OF_MAC;
+
+  //uint16_t index = millis() % NUMBER_OF_MAC;
+   uint16_t index = 0;
 
   //Ethernet.setSocketNum(4);
   //Ethernet.setSocketSize(1024 * 4);
@@ -92,19 +90,39 @@ void setup() {
   Serial.print(F("You're connected to the network, IP = "));
   Serial.println(Ethernet.localIP());
   
+  if (fritz.init())
+  {
+    Serial.println("Initialization for FritzBox is done");
+  }
+  else
+  {
+    Serial.println("Initialization for FritzBox failed");
+  }
   
-  fritz.init();
-  Serial.println("First done");
   delay(3000);
 
-  
+  bool isValid_SID = fritz.testSID();
+
+  //bool state_01 = fritz.getSwitchState(FRITZ_DEVICE_AIN_01);
 
 }
 
 void loop() {
 
-  // fritz.init();
-  // delay(3000);
+  
+  
+  bool state_01 = fritz.getSwitchState(FRITZ_DEVICE_AIN_01);
+
+  if(state_01)
+  {
+  Serial.println("Switch is on");
+  }
+  else
+  {
+    Serial.println("Switch is off");
+  }
+  
+  delay(3000);
 
   // put your main code here, to run repeatedly:
 }

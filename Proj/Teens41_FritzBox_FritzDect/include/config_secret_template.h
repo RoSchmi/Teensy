@@ -6,4 +6,9 @@
 #define FRITZ_USER ""                           // FritzBox User
 #define FRITZ_PASSWORD "MySecretName"           // FritzBox Password
 
+#define FRITZ_DEVICE_AIN_01 ""
+#define FRITZ_DEVICE_AIN_02 ""
+#define FRITZ_DEVICE_AIN_03 ""
+#define FRITZ_DEVICE_AIN_04 ""
+
 #endif // _CONFIG_SECRET_H

@@ -31,6 +31,8 @@ class FritzApi {
     ~FritzApi();
 
     bool init();
+
+    boolean testSID();
 	
 	// Switch actor on, return new switch state (true=on, false=off)
     boolean setSwitchOn(String ain);
@@ -75,7 +77,7 @@ class FritzApi {
   
     String getChallengeResponse();
     String getSID(String response);
-    String executeRequest(String request);
+    String executeRequest(String service, String request);
 	double convertTemperature(String result);
     
 };
