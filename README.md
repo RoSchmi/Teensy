@@ -20,6 +20,8 @@ Teensy 4.1 downloads a site SSL secured using 'NativeEthernet'- and 'EthernetHtt
 ### Teensy41_Watchdog_ResetCause_1
 Illustrates watchdog WDT1 and retrieving of last Reset Cause on Teensy 4.1
 
+### Teensy_FritzBox_FritzDect
+Teensy 4.1 controls Fritz!Dect Switchable Power Socket
 
 
 

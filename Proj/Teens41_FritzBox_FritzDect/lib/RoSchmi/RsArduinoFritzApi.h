@@ -1,3 +1,12 @@
+// Copyright RoSchmi 2021, License MIT
+// https://github.com/RoSchmi/Teensy/tree/master/Proj/Teens41_FritzBox_FritzDect
+//
+// This is an adaption/modification of:
+// https://github.com/planetk/ArduinoFritzApi 
+
+// For the MD5 hash calculation the used way was taken from
+// https://github.com/schuppeste/Arduino-Fritzbox-Login
+
 #ifndef RS_ARDUINO_FRITZ_API_H
 #define RS_ARDUINO_FRITZ_API_H
 
@@ -31,9 +40,9 @@ class FritzApi {
     ~FritzApi();
 
     bool init();
-
-    String testSID();
-	
+    
+    // Test if actually used SID is valid, returns actual SID 
+    String testSID();	
 	// Switch actor on, return new switch state (true=on, false=off)
     boolean setSwitchOn(String ain);
 	// Switch actor off, return new switch state (true=on, false=off)
@@ -53,6 +62,8 @@ class FritzApi {
 	// Get name of an actor
 	String getSwitchName(String ain);
 
+    // The Thermostat functions are actually not implemented
+    /*
 	// Get nominal temperature of thermostat (8 = <= 8°C, 28 = >= 28°C, 100 = max, 0 = off)
 	double getThermostatNominalTemperature(String ain);
 	// Get comfort temperature of thermostat (8 = <= 8°C, 28 = >= 28°C, 100 = max, 0 = off)
@@ -61,6 +72,7 @@ class FritzApi {
 	double getThermostatReducedTemperature(String ain);
 	// Set nominal temperature of thermostat (8 = <= 8°C, 28 = >= 28°C, 100 = max, 0 = off)
 	double setThermostatNominalTemperature(String ain, double temp);
+    */
 
   private:
     Protocol _protocol;
@@ -69,7 +81,9 @@ class FritzApi {
     const char* _pwd;
     const char* _ip;
     String _sid;
-    
+
+    const char * homeautoswitchService = "/webservices/homeautoswitch.lua?";
+    const char * login_sidService = "/login_sid.lua?";
     byte mynewbytes[100];
     EthernetHttpClient * http;
 	EthernetClient * client;
@@ -78,8 +92,9 @@ class FritzApi {
     String getChallengeResponse();
     String getSID(String response);
     String executeRequest(String service, String request);
-	double convertTemperature(String result);
-    
+
+    // not implemented
+	//double convertTemperature(String result); 
 };
 
 #include "RsArduinoFritzApi_Impl.h"

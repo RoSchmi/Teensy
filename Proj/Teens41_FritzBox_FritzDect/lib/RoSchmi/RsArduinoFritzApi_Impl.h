@@ -1,3 +1,12 @@
+// Copyright RoSchmi 2021, License MIT
+// https://github.com/RoSchmi/Teensy/tree/master/Proj/Teens41_FritzBox_FritzDect
+
+// This is an adaption/modification of:
+// https://github.com/planetk/ArduinoFritzApi 
+
+// For the MD5 hash calculation the used way was taken from
+// https://github.com/schuppeste/Arduino-Fritzbox-Login
+
 #include <Arduino.h>
 #include "RsArduinoFritzApi.h"
 #include "EthernetHttpClient_SSL.h"
@@ -53,6 +62,9 @@ bool FritzApi::init()
 String FritzApi::getChallengeResponse() 
 {
   http->connectionKeepAlive();
+  char port[10] {0};
+  itoa(_port, port, 10);
+  Serial.printf("%s%s%s", "Port = ", port, "\r\n");
   
   if (!(http->connect((char *)_ip, _port)))
   {
@@ -65,9 +77,7 @@ String FritzApi::getChallengeResponse()
        Serial.println(F("Error on http communication"));
        return "";
     }
-    
-    int statusCode = http->responseStatusCode();
-    
+    int statusCode = http->responseStatusCode(); 
     String result = "";
     if (statusCode != 200)
     {
@@ -79,33 +89,30 @@ String FritzApi::getChallengeResponse()
     else
     {
       result = http->responseBody();
-      Serial.print("Part of first response: ");
-      Serial.println(result.substring(0, 300 < (result.length() -1) ? 300 :  result.length() -1));
-      Serial.println();
+      //Serial.print("Challenge response: ");
+      //Serial.println(result.substring(0, 300 < (result.length() -1) ? 300 :  result.length() -1));
+      //Serial.println();
       String szblockTime = result.substring(result.indexOf("<BlockTime>") + 11, result.indexOf("</BlockTime>"));
       int blockTime = atoi(szblockTime.c_str());     
       if (blockTime > 0)
       {
         delay(blockTime * 1000);
       }
-      String challenge = result.substring(result.indexOf("<Challenge>") + 11, result.indexOf("</Challenge>"));
-      Serial.print("Callenge = ");
-      Serial.println(challenge);
-
+      String challenge = result.substring(result.indexOf("<Challenge>") + 11, result.indexOf("</Challenge>"));     
+      
+      // Serial.printf("%s%s%s", "Challenge = ", challenge.c_str(), "\r\n");
+      
       String challengeResponse = challenge + "-" + String(_pwd);
 
-      Serial.print("<Challenge>-<PWD>: ");
-      Serial.println(challengeResponse);
-      String responseHash = "";     
+      // Serial.printf("%s%s%s", "<Challenge>-<PWD>: ", challengeResponse.c_str(), "\r\n");
       
-      //char meinMD5String[challengeResponse.length() + 1] = {};
+      String responseHash = "";     
+           
       char meinMD5String[150] {0};
 
       challengeResponse.toCharArray(meinMD5String, challengeResponse.length() + 1);
       int challengeResponseLength = strlen(meinMD5String);
-      Serial.print("Length of Challengeresponse: ");
-      Serial.println(challengeResponseLength);
-      
+          
       //Nach 16Bit Konvertieren
       int i = 0;
       size_t x = 0;
@@ -132,27 +139,31 @@ String FritzApi::getChallengeResponse()
   
 String FritzApi::getSID(String response) 
 {
-   uint8_t connState = http->connected();
-
-   Serial.print("ConnState: ");
-   Serial.println(connState);
-  
-  /*
-  if (http->connected() == 0)
-  {  
-      Serial.println("Error on connection to fritzbox");
-      return "";
-  }
-  */
+  Serial.printf("%s%s%s", F("ConnectionState: "), http->connected(), "\r\n");
+   
   char augUrlPath[140] {0};
   sprintf((char *)augUrlPath, "%s%s%s%s", "/login_sid.lua?username=", _user, "&response=", (char *)response.c_str());
-    
-  Serial.print("Second Request: ");
-  Serial.println(augUrlPath);
+  
+  //Serial.printf("%s%s%s", "SID-Request: ", augUrlPath, "\r\n");
+  
+    // Try 3 times to connect
+  if (!(http->connected()))
+  {
+     for (int i = 0; i < 3; i++)
+     {
+        if (http->connect((char *)_ip, _port))
+        {      
+           break; 
+        }
+        else
+        {
+           Serial.println("Couldn't connect");
+           return "";
+        }
+     }
+  }
 
   http->connectionKeepAlive();
-
-  http->connect((char *)_ip, _port);
 
   int retCode = http->get(augUrlPath); 
   if (retCode != 0)
@@ -168,10 +179,10 @@ String FritzApi::getSID(String response)
     return "";
   }
   String result = http->responseBody();
-
-  String clippedResult = result.substring(0, 500 < result.length() ? 500 : result.length());
-  Serial.print("Second Response: ");
-  Serial.println(clippedResult);
+  
+  Serial.print("SID-Response: ");
+  Serial.println(result.substring(0, 500 < (result.length() -1) ? 500 :  result.length() -1));
+  
   http->stop();
 
   // TODO: check indexOf > 0
@@ -180,148 +191,100 @@ String FritzApi::getSID(String response)
 }
 
 
-/*
-boolean FritzApi::setSwitchOn(String ain) {
-  String result = executeRequest("setswitchon&sid=" + _sid + "&ain=" + String(ain));
-  return (atoi(result.c_str()) == 1);
-}
-*/
-
-/*
-boolean FritzApi::setSwitchOff(String ain) {
-  String result = executeRequest("setswitchoff&sid=" + _sid + "&ain=" + String(ain));
-  return (atoi(result.c_str()) == 1);
-}
-*/
-
-/*
-boolean FritzApi::setSwitchToggle(String ain) {
-  String result = executeRequest("setswitchtoggle&sid=" + _sid + "&ain=" + String(ain));
-  return (atoi(result.c_str()) == 1);
-}
-*/
 
 
 
 
 
-/*
-boolean FritzApi::getSwitchPresent(String ain) {
-  String result = executeRequest("getswitchpresent&sid=" + _sid + "&ain=" + String(ain));
-  return (atoi(result.c_str()) == 1);
-}
-*/
 
-
-
-
-
-/*
-int FritzApi::getSwitchEnergy(String ain) {
-  String result = executeRequest("getswitchenergy&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return atoi(result.c_str());
-}
-*/
-
-/*
-double FritzApi::getTemperature(String ain) {
-  String result = executeRequest("gettemperature&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return atof(result.c_str()) / 10;
-}
-*/
-
-/*
-String FritzApi::getSwitchName(String ain) {
-  return executeRequest("getswitchname&sid=" + _sid + "&ain=" + String(ain));
-}
-*/
-
-/*
-double FritzApi::getThermostatNominalTemperature(String ain) {
-  String result = executeRequest("gethkrtsoll&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return convertTemperature(result);
-}
-*/
-
-/*
-double FritzApi::getThermostatComfortTemperature(String ain) {
-  String result = executeRequest("gethkrkomfort&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return convertTemperature(result);
-}
-*/
-
-/*
-double FritzApi::getThermostatReducedTemperature(String ain) {
-  String result = executeRequest("gethkrabsenk&sid=" + _sid + "&ain=" + String(ain));
-  if (result == "inval") {
-  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
-  }
-  return convertTemperature(result);
-}
-*/
-
-/*
-double FritzApi::setThermostatNominalTemperature(String ain, double temp) {
-  int param;
-  if (temp == FRITZ_OFF_TEMPERATURE) {
-    param=253;
-  } else if (temp == FRITZ_ON_TEMPERATURE) {
-    param=254;
-  } else if (temp < 8.0f) {
-    param=16;
-  } else if (temp > 28.0f) {
-    param=56;
-  } else {
-    param = 2*temp;
-  }
-  String result = executeRequest("sethkrtsoll&sid=" + _sid + "&ain=" + String(ain) + "&param=" + param);
-  return temp;
-}
-*/
 
 String FritzApi::testSID()
-{
-  String service = "/login_sid.lua?"; 
+{ 
   char cmdSuffix[100] {0};
   sprintf((char *)cmdSuffix, "%s%s", "sid=", (char *)_sid.c_str());
-  String result = executeRequest(service, cmdSuffix);
+  String result = executeRequest(login_sidService, cmdSuffix);
   String sid = result.substring(result.indexOf("<SID>") + 5,  result.indexOf("</SID>"));
   return sid;
 } 
 
+String FritzApi::getSwitchName(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchname&sid=", (char *)_sid.c_str()); 
+  return executeRequest(homeautoswitchService, cmdSuffix);
+}
+
+
+boolean FritzApi::getSwitchPresent(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchpresent&sid=", (char *)_sid.c_str()); 
+
+  String result = executeRequest(homeautoswitchService, cmdSuffix);
+  return (atoi(result.c_str()) == 1);
+}
+
+boolean FritzApi::setSwitchOn(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=setswitchon&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(homeautoswitchService, cmdSuffix);
+  return (atoi(result.c_str()) == 1);
+}
+
+boolean FritzApi::setSwitchOff(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=setswitchoff&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(homeautoswitchService, cmdSuffix); 
+  return (atoi(result.c_str()) == 1);
+}
+
+boolean FritzApi::setSwitchToggle(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=setswitchtoggle&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(homeautoswitchService, cmdSuffix);
+  return (atoi(result.c_str()) == 1);
+}
+
 boolean FritzApi::getSwitchState(String ain) 
 {  
   char cmdSuffix[100] {0};
-  //sprintf((char *)cmdSuffix, "%s%s%s%s", "switchcmd=getswitchstate&sid=", (char *)_sid.c_str(), "&ain=", (char *)ain.c_str()); 
   sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchstate&sid=", (char *)_sid.c_str()); 
-  String service = "/webservices/homeautoswitch.lua?"; 
-  String result = executeRequest(service , cmdSuffix);
-
-  Serial.println(result);
+  String result = executeRequest(homeautoswitchService , cmdSuffix); 
   return (atoi(result.c_str()) == 1);
 }
 
 double FritzApi::getSwitchPower(String ain) {
-  String service = "/webservices/homeautoswitch.lua?";
   char cmdSuffix[100] {0};
   sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchpower&sid=", (char *)_sid.c_str()); 
-  String result = executeRequest(service , cmdSuffix);
+  String result = executeRequest(homeautoswitchService , cmdSuffix);
   if (result == "inval") {
   	//throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
   }
   return atof(result.c_str()) / 1000;
+}
+
+
+int FritzApi::getSwitchEnergy(String ain) {
+  char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=getswitchenergy&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(homeautoswitchService , cmdSuffix);
+  if (result == "inval") {
+    return 0;
+  	//throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return atoi(result.c_str());
+}
+
+
+double FritzApi::getTemperature(String ain) {
+ char cmdSuffix[100] {0};
+  sprintf((char *)cmdSuffix, "%s%s%s%s", "ain=", (char *)ain.c_str(), "&switchcmd=gettemperature&sid=", (char *)_sid.c_str()); 
+  String result = executeRequest(homeautoswitchService , cmdSuffix);
+
+
+ //String result = executeRequest("gettemperature&sid=" + _sid + "&ain=" + String(ain));
+  if (result == "inval") {
+  	//throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return atof(result.c_str()) / 10;
 }
 
 String FritzApi::executeRequest(String service, String command) 
@@ -330,6 +293,7 @@ String FritzApi::executeRequest(String service, String command)
   char aUrlPath[140] {0};
   int httpStatus = -1;
   
+  //sprintf((char *)aUrlPath, "%s%s%s%s", "http://", _ip, (char *)service.c_str(), (char *)command.c_str());
   sprintf((char *)aUrlPath, "%s%s", (char *)service.c_str(), (char *)command.c_str());        
   //Serial.println(aUrlPath);
 
@@ -384,6 +348,56 @@ String FritzApi::executeRequest(String service, String command)
     return "Not connected";
   } 
 }
+
+// Not implemented/adapted functions for thermostat
+/*
+double FritzApi::getThermostatNominalTemperature(String ain) {
+  String result = executeRequest("gethkrtsoll&sid=" + _sid + "&ain=" + String(ain));
+  if (result == "inval") {
+  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return convertTemperature(result);
+}
+*/
+
+/*
+double FritzApi::getThermostatComfortTemperature(String ain) {
+  String result = executeRequest("gethkrkomfort&sid=" + _sid + "&ain=" + String(ain));
+  if (result == "inval") {
+  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return convertTemperature(result);
+}
+*/
+
+/*
+double FritzApi::getThermostatReducedTemperature(String ain) {
+  String result = executeRequest("gethkrabsenk&sid=" + _sid + "&ain=" + String(ain));
+  if (result == "inval") {
+  	throw FRITZ_ERR_VALUE_NOT_AVAILABLE;
+  }
+  return convertTemperature(result);
+}
+*/
+
+/*
+double FritzApi::setThermostatNominalTemperature(String ain, double temp) {
+  int param;
+  if (temp == FRITZ_OFF_TEMPERATURE) {
+    param=253;
+  } else if (temp == FRITZ_ON_TEMPERATURE) {
+    param=254;
+  } else if (temp < 8.0f) {
+    param=16;
+  } else if (temp > 28.0f) {
+    param=56;
+  } else {
+    param = 2*temp;
+  }
+  String result = executeRequest("sethkrtsoll&sid=" + _sid + "&ain=" + String(ain) + "&param=" + param);
+  return temp;
+}
+*/
 
 /*
 double FritzApi::convertTemperature(String result) {
