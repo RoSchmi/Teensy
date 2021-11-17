@@ -103,15 +103,15 @@ String FritzApi::getChallengeResponse()
       // Serial.printf("%s%s%s", "Challenge = ", challenge.c_str(), "\r\n");
       
       String challengeResponse = challenge + "-" + String(_pwd);
-
-      // Serial.printf("%s%s%s", "<Challenge>-<PWD>: ", challengeResponse.c_str(), "\r\n");
+      
+      //Serial.printf("%s%s%s", "<Challenge>-<PWD>: ", challengeResponse.c_str(), "\r\n");
       
       String responseHash = "";     
            
       char meinMD5String[150] {0};
 
       challengeResponse.toCharArray(meinMD5String, challengeResponse.length() + 1);
-      int challengeResponseLength = strlen(meinMD5String);
+      //int challengeResponseLength = strlen(meinMD5String);
           
       //Nach 16Bit Konvertieren
       int i = 0;
@@ -132,13 +132,15 @@ String FritzApi::getChallengeResponse()
         
       unsigned char* hash = MD5::make_hash((char*)mynewbytes, (size_t)(strlen((char *)meinMD5String) * 2));
       char *md5str = MD5::make_digest(hash, 16);
-      free(hash);              
+      free(hash);
+
       return challenge + "-" + md5str; 
    } 
 }
   
 String FritzApi::getSID(String response) 
 {
+  
   Serial.printf("%s%s%s", F("ConnectionState: "), http->connected(), "\r\n");
    
   char augUrlPath[140] {0};
@@ -180,8 +182,8 @@ String FritzApi::getSID(String response)
   }
   String result = http->responseBody();
   
-  Serial.print("SID-Response: ");
-  Serial.println(result.substring(0, 500 < (result.length() -1) ? 500 :  result.length() -1));
+  //Serial.print("SID-Response: ");
+  //Serial.println(result.substring(0, 500 < (result.length() -1) ? 500 :  result.length() -1));
   
   http->stop();
 
@@ -329,7 +331,7 @@ String FritzApi::executeRequest(String service, String command)
     result = http->responseBody();
 
     http->stop();
-
+    
     if (httpStatus == 200) 
     {     
       return result;

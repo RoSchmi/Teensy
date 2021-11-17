@@ -158,14 +158,16 @@ void loop() {
 
   if (state_01)
   {
-     Serial.println("Switch is now set to off");
-     bool newState_01 = fritz.setSwitchOff(FRITZ_DEVICE_AIN_01);
+     Serial.println(F("Switch is now set to off (function inactivated)"));
+     // Uncomment to activate
+     // bool newState_01 = fritz.setSwitchOff(FRITZ_DEVICE_AIN_01);
   }
   else
   {
-     Serial.println("Switch is now set to on");
-     bool newState_01 = fritz.setSwitchOn(FRITZ_DEVICE_AIN_01);
+     Serial.println(F("Switch is now set to on (function inactivated)"));
+     // Uncomment to activate
+     // bool newState_01 = fritz.setSwitchOn(FRITZ_DEVICE_AIN_01);
   }
   
-  delay(10000);
+  delay( 30 * 60 * 1000);
 }

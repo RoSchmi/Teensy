@@ -12,10 +12,15 @@ extern "C"
 #include "SSLClient/bearssl_x509.h"
 
 // RoSchmi: fritz.box certivicate
+// 
+// 1 Zertifikat herunterladen
+// Klicken Sie in der Benutzeroberfläche der FRITZ!Box auf "Internet".
+// Klicken Sie im Menü "Internet" auf "Freigaben".
+// Klicken Sie auf die Registerkarte "FRITZ!Box-Dienste".
+// Klicken Sie auf "Zertifikat herunterladen" und speichern Sie die Datei mit dem Zertifikat auf Ihrem Computer.
 //
 // How to get the certificate in the required format:
-// Download the certificate in .cer format with your internet browser
-// from page https://fritz.box 
+// Download the certificate in .cer format 
 
 // Convert certificate from .cer format to .pem format
 // with openssl:
