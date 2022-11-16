@@ -24,6 +24,9 @@ Illustrates watchdog WDT1 and retrieving of last Reset Cause on Teensy 4.1
 Teensy 4.1 controls Fritz!Dect Switchable Power Socket
 
 ### Teensy41_USB_Host_KeyBoard
-Teensy 4.1 USB Host receives keystrokes form HID USB Keyboard 
+Teensy 4.1 USB Host receives keystrokes form HID USB Keyboard
+
+### Teensy41_PlaySounds_USB_Keyboard
+Use an USB Keyboard or Keypad to play notes on a Teensy 4.1 (with Audio Module)
 
 
