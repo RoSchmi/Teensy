@@ -2,6 +2,9 @@
 // The USB Part of this example is from:
 // https://github.com/PaulStoffregen/USBHost_t36/blob/master/examples/KeyboardForeward/KeyboardForeward.ino
 
+// Design Tool: https://www.pjrc.com/teensy/gui/
+//
+// 
 // Playing notes on the keyboard / keypad
 //
 // Notes definitions:
@@ -92,6 +95,7 @@ void loop()
   ShowUpdatedDeviceListInfo();
   
   // Process keycodes which came from the keyboard
+  // actKeyCode is changed in 'OnRawPress' and 'OnRawRelease'
   if (actKeyCode != lastKeyCode)
   {
     sine1.frequency(keyFrequTab.getFrequ(actKeyCode));
