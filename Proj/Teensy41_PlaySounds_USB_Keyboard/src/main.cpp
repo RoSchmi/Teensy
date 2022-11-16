@@ -22,33 +22,10 @@ uint8_t actKeyCode = 0x00;
 uint8_t lastKeyCode = 0x00;
 
 AudioSynthWaveformSine sine1;
-AudioMixer4              mixer1;
-
-
-AudioPlaySdWav           playSdWav1;
 AudioOutputI2S           i2s1;
-
-//AudioConnection          patchCord1(playSdWav1, 0, i2s1, 0);
-//AudioConnection          patchCord2(playSdWav1, 1, i2s1, 1);
-
 AudioConnection          patchCord1(sine1, 0, i2s1, 0);
 AudioConnection          patchCord2(sine1, 0, i2s1, 1);
-
-
-//AudioConnection          patchCord1(playSdWav1, 0, mixer1, 0);
-//AudioConnection          patchCord2(playSdWav1, 1, mixer1, 1);
-
-//AudioConnection          patchCord3(sine1, 0, mixer1, 2);
-
-//AudioConnection         patchCord4(mixer1, 0, i2s1, 2);
-
 AudioControlSGTL5000     sgtl5000_1;
-
-// Use these with the Teensy Audio Shield
-#define SDCARD_CS_PIN    10
-#define SDCARD_MOSI_PIN  7
-#define SDCARD_SCK_PIN   14
-
 
 // You can have this one only output to the USB type Keyboard and
 // not show the keyboard data on Serial...
@@ -83,17 +60,18 @@ void ShowHIDExtrasPress(uint32_t top, uint16_t key);
 
 void setup()
 {
-#ifdef SHOW_KEYBOARD_DATA
-  //while (!Serial) ; // wait for Arduino Serial Monitor
-  Serial.println("\n\nUSB Host Keyboard forward and Testing");
-  Serial.println(sizeof(USBHub), DEC);
-#endif
-  myusb.begin();
+  #ifdef SHOW_KEYBOARD_DATA
+    //while (!Serial) ; // wait for Arduino Serial Monitor
+    Serial.println("\n\nUSB Host Keyboard forward and Testing");
+    Serial.println(sizeof(USBHub), DEC);
+  #endif
+    myusb.begin();
 
-  // Only needed to display...
-#ifdef SHOW_KEYBOARD_DATA
-  keyboard1.attachPress(OnPress);
-#endif
+    // Only needed to display...
+  #ifdef SHOW_KEYBOARD_DATA
+    keyboard1.attachPress(OnPress);
+  #endif
+
   keyboard1.attachRawPress(OnRawPress);
   keyboard1.attachRawRelease(OnRawRelease);
   keyboard1.attachExtrasPress(OnHIDExtrasPress);
@@ -103,28 +81,8 @@ void setup()
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.2);
 
-  //waveform1.begin(WAVEFORM_SINE);
-  //waveform1.amplitude(0.75);
-
   sine1.frequency(1000);
   sine1.amplitude(0.75);
-
-  SPI.setMOSI(SDCARD_MOSI_PIN);
-  SPI.setSCK(SDCARD_SCK_PIN);
-  if (!(SD.begin(SDCARD_CS_PIN))) {
-    while (1) {
-      Serial.println("Unable to access the SD card");
-      delay(500);
-    }
-  }
-  /*
-  mixer1.gain(0, 0.75);
-  mixer1.gain(1, 0.0);
-  mixer1.gain(2, 0.0);
-  mixer1.gain(3, 0.0);
-  */
-  
-
   delay(1000);
 }
 
@@ -133,6 +91,7 @@ void loop()
   myusb.Task();
   ShowUpdatedDeviceListInfo();
   
+  // Process keycodes which came from the keyboard
   if (actKeyCode != lastKeyCode)
   {
     sine1.frequency(keyFrequTab.getFrequ(actKeyCode));
@@ -140,20 +99,9 @@ void loop()
   }
   if (actKeyCode == 0x00)
   {
-      sine1.amplitude(0);
-      //sine1.frequency(1);
+      sine1.amplitude(0); 
   }
-
-  /*
-  if (playSdWav1.isPlaying() == false) {
-    Serial.println("Start playing");
-    playSdWav1.play("SDTEST2.WAV");
-    delay(10); // wait for library to parse WAV info
-  }
-  */
 }
-
-
 
 void OnRawPress(uint8_t keycode) {
 #ifdef KEYBOARD_INTERFACE
@@ -188,16 +136,6 @@ void OnRawPress(uint8_t keycode) {
 
 lastKeyCode = actKeyCode;
 actKeyCode = keycode;
-/*
-if (keycode == 0x04)
-{
-  sine1.frequency(200);
-}
-if (keycode == 0x16)
-{
-  sine1.frequency(1000);
-}
-*/
 
 }
 void OnRawRelease(uint8_t keycode) {
@@ -219,9 +157,9 @@ void OnRawRelease(uint8_t keycode) {
   Serial.println(keyboard1.getModifiers(), HEX);
 #endif
 
+  // 
   if (keycode == actKeyCode)
-  {
-    Serial.print("Setting to 00");
+  { 
     actKeyCode = 0x00;
   }
 }
