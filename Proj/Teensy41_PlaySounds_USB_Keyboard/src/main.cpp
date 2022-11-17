@@ -14,6 +14,7 @@
 #include "USBHost_t36.h"
 #include "KeyBoardHelper.h"
 #include "KeyFrequTable.h"
+#include "MixerSettings.h"
 
 #include <Audio.h>
 #include <Wire.h>
