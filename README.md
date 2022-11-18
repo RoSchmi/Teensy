@@ -29,4 +29,8 @@ Teensy 4.1 USB Host receives keystrokes form HID USB Keyboard
 ### Teensy41_PlaySounds_USB_Keyboard
 Use an USB Keyboard or Keypad to play notes on a Teensy 4.1 (with Audio Module)
 
-
+### Teensy41_PlaySounds_USB_Keyboard_Test
+In this example you can play tones by typing on a connected USB Keyboard
+Typing Esc disables the output
+In the background drum sounds are added
+Play music from SD-Card und add other waveforms by changing the code
