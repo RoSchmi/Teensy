@@ -1,4 +1,4 @@
-// Teensy41_USB_Audio_Input
+// Teensy41_USB_Audio_Output
 // (uses Audio Shield)
 // Design Tool: https://www.pjrc.com/teensy/gui/
 //
