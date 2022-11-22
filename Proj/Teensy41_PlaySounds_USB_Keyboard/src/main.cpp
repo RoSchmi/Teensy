@@ -65,7 +65,7 @@ void ShowHIDExtrasPress(uint32_t top, uint16_t key);
 void setup()
 {
   #ifdef SHOW_KEYBOARD_DATA
-    //while (!Serial) ; // wait for Arduino Serial Monitor
+    while (!Serial) ; // wait for Arduino Serial Monitor
     Serial.println("\n\nUSB Host Keyboard forward and Testing");
     Serial.println(sizeof(USBHub), DEC);
   #endif

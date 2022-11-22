@@ -34,3 +34,7 @@ In this example you can play tones by typing on a connected USB Keyboard
 Typing Esc disables the output
 In the background drum sounds are added
 Play music from SD-Card und add other waveforms by changing the code
+
+### Teensy41_USB_Audio_Input
+(uses Audio Shield)
+Teensy receives audio from e.g. PC via USB and pays on headphones
