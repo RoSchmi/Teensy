@@ -8,6 +8,8 @@
 // Important: Set the proper 'build_flags' in platformio.ini 
 
 #include <Arduino.h>
+//#include "usb_desc.h"
+//#include "usb_audio.h"
 #include <Audio.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -28,6 +30,9 @@ AudioConnection          patchCord4(playSdWav1, 1, i2s1, 1);
 #define SDCARD_SCK_PIN   14
 
 void setup() {
+  //Serial.begin(9600);
+  //while(!Serial) {};
+  //Serial.println("Hello here is Teensy");
   AudioMemory(30);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.2);

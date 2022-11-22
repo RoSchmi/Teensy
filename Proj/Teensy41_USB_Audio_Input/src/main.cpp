@@ -7,6 +7,8 @@
 // Important: Set the proper 'build_flags' in platformio.ini 
 
 #include <Arduino.h>
+//#include "usb_desc.h"
+//#include "usb_audio.h"
 #include <Audio.h>
 #include <Wire.h>
 #include <SPI.h>
