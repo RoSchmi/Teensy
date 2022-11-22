@@ -37,4 +37,4 @@ Play music from SD-Card und add other waveforms by changing the code
 
 ### Teensy41_USB_Audio_Input
 (uses Audio Shield)
-Teensy receives audio from e.g. PC via USB and pays on headphones
+Teensy receives audio from e.g. PC via USB and plays on headphones
