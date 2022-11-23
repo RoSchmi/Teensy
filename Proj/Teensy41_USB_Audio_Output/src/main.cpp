@@ -5,6 +5,10 @@
 
 // In this example sound from Teensy SD-Card is transmitted via USB and played on the PC
 // You can record the sound with e.g. the Audacity App
+// Or play the sound on the PC with the C# open source
+// Program: 'Repeater Tester' from this Code Project:
+// https://www.codeproject.com/Articles/394890/Play-or-Capture-Audio-Sound-Send-and-Receive-as-Mu
+
 // Important: Set the proper 'build_flags' in platformio.ini 
 
 #include <Arduino.h>
