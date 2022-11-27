@@ -45,3 +45,8 @@ Teensy reads audio from SD-Card and sends to PC via Usb
 
 ### Teensy41_Midi_Get_Notes_from_Yamaha_PSR140_Keyboard
 Teensy 4.1 receives Midi notes from a Yamaha PSR-140 keyboard
+
+### Teensy41_Midi_Notes_Record _and_Play _On_Audioshield
+(uses Audio Shield)
+
+Play Midi-notes typed on a Yamaha PSR-140 keyboard on Teensy Audioshield-headphones and on the PC
