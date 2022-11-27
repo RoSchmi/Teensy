@@ -42,3 +42,6 @@ Teensy receives audio from e.g. PC via USB and plays on headphones
 ### Teensy41_USB_Audio_Output
 (uses Audio Shield)
 Teensy reads audio from SD-Card and sends to PC via Usb
+
+### Teensy41_Midi_Get_Notes_from_Yamaha_PSR140_Keyboard
+Teensy 4.1 receives Midi notes from a Yamaha PSR-140 keyboard
