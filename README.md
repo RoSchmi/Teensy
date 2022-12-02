@@ -50,3 +50,7 @@ Teensy 4.1 receives Midi notes from a Yamaha PSR-140 keyboard
 (uses Audio Shield)
 
 Play Midi-notes typed on a Yamaha PSR-140 keyboard on Teensy Audioshield-headphones and on the PC
+
+### Teensy41_Tranfer_MIDI_To_UsbMidi
+
+Transfer MIDI notes received from Serial ports to UsbMIDI 
